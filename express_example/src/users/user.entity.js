@@ -7,7 +7,8 @@ const schema = new Schema({
     username: {
         type: String,
         required: true,
-        unique: true
+        unique: true,
+        minlength: 4
     },
 
     password: {
@@ -27,6 +28,16 @@ const schema = new Schema({
 
     role: {
         type: String,
+    },
+
+    failedLoginCounter : {
+        type : Number,
+        default: 0
+    },
+
+    accountLocked : {
+        type : Boolean,
+        default : false
     }
 }, { collection: 'users' });
 
@@ -35,6 +46,16 @@ schema.pre('save', function (next) {
         const salt = bcrypt.genSaltSync();
         this.password = bcrypt.hashSync(this.password, salt);
     }
+
+    if(this.isModified('firstName')){
+        this.firstName = this.firstName.trim();
+    }
+
+    if(this.isModified('lastName')){
+        this.lastName = this.lastName.trim();
+    }
+
+    
 
     next();
 })
